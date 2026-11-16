@@ -1,3 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Calculator-Ver20261116</string>
+    <string name="app_name">Skaičiuotuvas</string>
+    <string name="header_standard">Standard</string>
+
+    <!-- Atminties (Memory) mygtukai -->
+    <string name="btn_mc">MC</string>
+    <string name="btn_mr">MR</string>
+    <string name="btn_m_plus">M+</string>
+    <string name="btn_m_minus">M−</string>
+    <string name="btn_ms">MS</string>
+    <string name="btn_m_list">M∨</string>
+
+    <!-- Funkcijų ir operacijų mygtukai -->
+    <string name="btn_percent">%</string>
+    <string name="btn_ce">CE</string>
+    <string name="btn_c">C</string>
+    <string name="btn_backspace">⌫</string>
+    <string name="btn_reciprocal">¹/x</string>
+    <string name="btn_square">x²</string>
+    <string name="btn_sqrt">²√x</string>
+    <string name="btn_divide">÷</string>
+    <string name="btn_multiply">×</string>
+    <string name="btn_subtract">−</string>
+    <string name="btn_add">+</string>
+    <string name="btn_equals">=</string>
+    <string name="btn_negate">⁺/₋</string>
+    <string name="btn_dot">.</string>
+
+    <!-- Skaičiai -->
+    <string name="btn_0">0</string>
+    <string name="btn_1">1</string>
+    <string name="btn_2">2</string>
+    <string name="btn_3">3</string>
+    <string name="btn_4">4</string>
+    <string name="btn_5">5</string>
+    <string name="btn_6">6</string>
+    <string name="btn_7">7</string>
+    <string name="btn_8">8</string>
+    <string name="btn_9">9</string>
+
+    <!-- Istorijos dialogo tekstai -->
+    <string name="history_title">Istorija</string>
+    <string name="history_empty">Istorijos dar nėra</string>
+    <string name="history_clear_desc">Išvalyti visą istoriją</string>
+    <string name="history_cleared_toast">Istorija išvalyta</string>
+    <string name="history_item_selected_toast">Reikšmė įkelta į skaičiuotuvą</string>
+
+    <!-- Atminties pranešimai -->
+    <string name="memory_cleared_toast">Atmintis išvalyta (MC)</string>
+    <string name="memory_stored_toast">Reikšmė išsaugota į atmintį (MS)</string>
+    <string name="memory_empty_toast">Atmintyje nėra išsaugotų reikšmių</string>
+
+    <!-- Klaidų tekstai -->
+    <string name="error_divide_by_zero">Dalyba iš nulio negalima</string>
+    <string name="error_invalid_input">Netinkama įvestis</string>
+    <string name="error_general">Klaida</string>
+
+    <!-- Prieinamumas (Accessibility / TalkBack) -->
+    <string name="cd_menu">Meniu</string>
+    <string name="cd_keep_on_top">Laikyti viršuje</string>
+    <string name="cd_history">Atliktų skaičiavimų istorija</string>
+    <string name="cd_percent">Procentai</string>
+    <string name="cd_ce">Išvalyti esamą įvestį</string>
+    <string name="cd_c">Išvalyti viską</string>
+    <string name="cd_backspace">Trinti paskutinį simbolį</string>
+    <string name="cd_reciprocal">Trupmena, vienas padalinta iš x</string>
+    <string name="cd_square">Kėlimas kvadratu</string>
+    <string name="cd_sqrt">Kvadratinė šaknis</string>
+    <string name="cd_divide">Dalyba</string>
+    <string name="cd_multiply">Daugyba</string>
+    <string name="cd_subtract">Atimtis</string>
+    <string name="cd_add">Sudėtis</string>
+    <string name="cd_equals">Lygybė, gauti rezultatą</string>
+    <string name="cd_negate">Keisti skaičiaus ženklą</string>
+    <string name="cd_dot">Kablelis / taškas</string>
 </resources>
