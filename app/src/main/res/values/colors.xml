@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Fonai -->
     <color name="calc_background">#F3F3F3</color>
     <color name="header_background">#F3F3F3</color>
 
+    <!-- Mygtukų fono ir kraštinių spalvos -->
     <color name="btn_number_bg">#FFFFFF</color>
     <color name="btn_number_stroke">#E1E1E1</color>
     <color name="btn_number_ripple">#E4E4E4</color>
@@ -15,16 +17,20 @@
     <color name="btn_equals_stroke">#005FB8</color>
     <color name="btn_equals_ripple">#004C8C</color>
 
+    <!-- Teksto spalvos -->
     <color name="text_display">#111111</color>
     <color name="text_expression">#5F5F5F</color>
+    <color name="text_secondary">#5F5F5F</color>
     <color name="text_btn_number">#1A1A1A</color>
     <color name="text_btn_operator">#1A1A1A</color>
     <color name="text_btn_equals">#FFFFFF</color>
 
+    <!-- Atminties (Memory) mygtukų spalvos -->
     <color name="text_memory_disabled">#9E9E9E</color>
     <color name="text_memory_active">#111111</color>
     <color name="btn_memory_ripple">#E0E0E0</color>
 
+    <!-- Piktogramų spalvos -->
     <color name="icon_tint">#202020</color>
     <color name="icon_delete">#D32F2F</color>
 </resources>
