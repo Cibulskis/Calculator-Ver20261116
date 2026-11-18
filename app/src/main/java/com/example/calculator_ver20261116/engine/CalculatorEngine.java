@@ -8,7 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
- * Autonominis skaičiavimo variklis ("from scratch").
+ * Autonominis skaičiavimo variklis su patikimu būsenų valdymu.
  */
 public class CalculatorEngine {
 
@@ -48,6 +48,7 @@ public class CalculatorEngine {
     private Operator pendingOperator = null;
     private String expressionText = "";
     private boolean isEnteringNewNumber = true;
+    private boolean isResultDisplayed = false;
 
     private ErrorCode errorCode = ErrorCode.NONE;
 
@@ -73,13 +74,14 @@ public class CalculatorEngine {
         pendingOperator = null;
         expressionText = "";
         isEnteringNewNumber = true;
+        isResultDisplayed = false;
         errorCode = ErrorCode.NONE;
         lastSecondOperand = null;
         lastOperator = null;
     }
 
     public void clearEntry() {
-        if (errorCode != ErrorCode.NONE) {
+        if (errorCode != ErrorCode.NONE || isResultDisplayed) {
             resetAll();
             return;
         }
@@ -89,6 +91,10 @@ public class CalculatorEngine {
 
     public void inputDigit(char digit) {
         if (errorCode != ErrorCode.NONE) {
+            resetAll();
+        }
+
+        if (isResultDisplayed) {
             resetAll();
         }
 
@@ -112,6 +118,10 @@ public class CalculatorEngine {
             resetAll();
         }
 
+        if (isResultDisplayed) {
+            resetAll();
+        }
+
         if (isEnteringNewNumber) {
             currentInput = "0.";
             isEnteringNewNumber = false;
@@ -128,7 +138,7 @@ public class CalculatorEngine {
             return;
         }
 
-        if (isEnteringNewNumber) {
+        if (isResultDisplayed || isEnteringNewNumber) {
             return;
         }
 
@@ -164,6 +174,17 @@ public class CalculatorEngine {
         try {
             BigDecimal currentVal = new BigDecimal(currentInput);
 
+            if (isResultDisplayed) {
+                firstOperand = currentVal;
+                pendingOperator = op;
+                expressionText = formatNumber(firstOperand) + " " + op.getSymbol();
+                isEnteringNewNumber = true;
+                isResultDisplayed = false;
+                lastSecondOperand = null;
+                lastOperator = null;
+                return;
+            }
+
             if (firstOperand != null && pendingOperator != null && !isEnteringNewNumber) {
                 BigDecimal result = executeOperation(firstOperand, currentVal, pendingOperator);
                 firstOperand = result;
@@ -189,14 +210,9 @@ public class CalculatorEngine {
 
         try {
             if (firstOperand != null && pendingOperator != null) {
-                BigDecimal secondOperand;
-                if (isEnteringNewNumber && lastSecondOperand != null) {
-                    secondOperand = lastSecondOperand;
-                } else {
-                    secondOperand = new BigDecimal(currentInput);
-                    lastSecondOperand = secondOperand;
-                    lastOperator = pendingOperator;
-                }
+                BigDecimal secondOperand = new BigDecimal(currentInput);
+                lastSecondOperand = secondOperand;
+                lastOperator = pendingOperator;
 
                 BigDecimal result = executeOperation(firstOperand, secondOperand, pendingOperator);
                 String expr = formatNumber(firstOperand) + " " + pendingOperator.getSymbol() + " " + formatNumber(secondOperand) + " =";
@@ -204,8 +220,10 @@ public class CalculatorEngine {
 
                 expressionText = expr;
                 currentInput = resStr;
-                firstOperand = result;
+                firstOperand = null;
+                pendingOperator = null;
                 isEnteringNewNumber = true;
+                isResultDisplayed = true;
 
                 if (historyCallback != null) {
                     historyCallback.onCalculationFinished(expr, resStr);
@@ -218,8 +236,8 @@ public class CalculatorEngine {
 
                 expressionText = expr;
                 currentInput = resStr;
-                firstOperand = result;
                 isEnteringNewNumber = true;
+                isResultDisplayed = true;
 
                 if (historyCallback != null) {
                     historyCallback.onCalculationFinished(expr, resStr);
@@ -248,6 +266,7 @@ public class CalculatorEngine {
 
             currentInput = formatNumber(result);
             isEnteringNewNumber = true;
+            isResultDisplayed = false;
         } catch (Exception e) {
             setError(ErrorCode.GENERAL_ERROR);
         }
@@ -276,6 +295,7 @@ public class CalculatorEngine {
 
             currentInput = formatNumber(result);
             isEnteringNewNumber = true;
+            isResultDisplayed = false;
         } catch (Exception e) {
             setError(ErrorCode.INVALID_INPUT);
         }
@@ -302,6 +322,7 @@ public class CalculatorEngine {
 
             currentInput = formatNumber(result);
             isEnteringNewNumber = true;
+            isResultDisplayed = false;
         } catch (ArithmeticException e) {
             setError(ErrorCode.DIVIDE_BY_ZERO);
         } catch (Exception e) {
@@ -328,6 +349,7 @@ public class CalculatorEngine {
 
             currentInput = formatNumber(result);
             isEnteringNewNumber = true;
+            isResultDisplayed = false;
         } catch (Exception e) {
             setError(ErrorCode.GENERAL_ERROR);
         }
@@ -344,6 +366,7 @@ public class CalculatorEngine {
         if (errorCode != ErrorCode.NONE || !hasMemory) return;
         currentInput = formatNumber(memory);
         isEnteringNewNumber = true;
+        isResultDisplayed = false;
     }
 
     public void memoryAdd() {
@@ -373,6 +396,7 @@ public class CalculatorEngine {
         resetAll();
         currentInput = val;
         isEnteringNewNumber = true;
+        isResultDisplayed = true;
     }
 
     private BigDecimal executeOperation(BigDecimal a, BigDecimal b, Operator op) {
@@ -398,6 +422,7 @@ public class CalculatorEngine {
         this.firstOperand = null;
         this.pendingOperator = null;
         this.isEnteringNewNumber = true;
+        this.isResultDisplayed = false;
     }
 
     public boolean hasError() {
@@ -429,27 +454,35 @@ public class CalculatorEngine {
     }
 
     private String formatDisplayWithSeparators(String input) {
-        if (input.equals("0") || input.equals("-0") || input.equals("0.") || input.isEmpty()) {
-            return input;
+        if (input == null || input.isEmpty() || input.equals("0")) {
+            return input == null ? "0" : input;
         }
 
         try {
-            boolean hasTrailingDot = input.endsWith(".");
-            String[] parts = input.split("\\.");
-            BigDecimal wholePart = new BigDecimal(parts[0]);
+            boolean isNegative = input.startsWith("-");
+            String raw = isNegative ? input.substring(1) : input;
+
+            boolean hasTrailingDot = raw.endsWith(".");
+            String[] parts = raw.split("\\.");
+            BigDecimal wholePart = parts.length > 0 && !parts[0].isEmpty() ? new BigDecimal(parts[0]) : BigDecimal.ZERO;
 
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
             symbols.setGroupingSeparator(' ');
-            DecimalFormat df = new DecimalFormat("#,###", symbols);
+            DecimalFormat df = new DecimalFormat("#,##0", symbols);
             String formattedWhole = df.format(wholePart);
 
-            if (parts.length > 1) {
-                return formattedWhole + "." + parts[1];
-            } else if (hasTrailingDot) {
-                return formattedWhole + ".";
-            } else {
-                return formattedWhole;
+            StringBuilder sb = new StringBuilder();
+            if (isNegative) {
+                sb.append("-");
             }
+            sb.append(formattedWhole);
+
+            if (parts.length > 1) {
+                sb.append(".").append(parts[1]);
+            } else if (hasTrailingDot) {
+                sb.append(".");
+            }
+            return sb.toString();
         } catch (Exception e) {
             return input;
         }
